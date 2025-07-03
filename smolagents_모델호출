@@ -1,0 +1,14 @@
+from smolagents import CodeAgent
+from smolagents import TransformersModel
+from huggingface_hub import login
+hftoken = ''
+login(token=hftoken)
+# Initialize a model (using Hugging Face Inference API)
+model = TransformersModel(model_id="naver-hyperclovax/HyperCLOVAX-SEED-Text-Instruct-1.5B")  # Uses a default model
+
+# Create an agent with no tools
+agent = CodeAgent(tools=[], model=model)
+
+# Run the agent with a task
+result = agent.run("Calculate the sum of numbers from 1 to 10")
+print(result)
