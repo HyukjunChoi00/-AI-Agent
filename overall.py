@@ -33,8 +33,7 @@ except ImportError:
     st.code("playwright install chromium")
 
 # 환경 변수 설정
-os.environ["GOOGLE_API_KEY"] = 'AIzaSyAPf9KX4Ea_MKiC_tYfm8OUlv_A71BUz1I'
-os.environ["CLOVASTUDIO_API_KEY"] = 'nv-1f1def6bd290499888f325e448e00d6f4O21'
+os.environ["CLOVASTUDIO_API_KEY"] = ''
 
 from langchain_naver import ChatClovaX
   
@@ -351,10 +350,6 @@ def generate_response(state):
 
 # Streamlit 앱 초기화
 if 'graph' not in st.session_state:
-    #llm = ChatGoogleGenerativeAI(
-        #model="gemini-2.0-flash-001",
-        #temperature=0
-    #)
     llm = chat
 
     # 그래프 구성
