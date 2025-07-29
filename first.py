@@ -33,7 +33,7 @@ except ImportError:
     st.code("playwright install chromium")
 
 # 환경 변수 설정
-os.environ["GOOGLE_API_KEY"] = 'AIzaSyBuqKNpYXdl9pzxhtRqOIZf_HgNviKqCoA'
+os.environ["GOOGLE_API_KEY"] = ''
 
 class EconoTimesFullPipeline:
     def __init__(self, max_articles=5):
