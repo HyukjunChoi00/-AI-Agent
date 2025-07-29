@@ -150,9 +150,7 @@ def build_keyword_extraction_chain():
                   "질문: {query}\n"
                   "핵심 키워드:")]
     )
-    return prompt_template | ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-001",
-        temperature=0
+    return prompt_template | chat
     )
 
 
@@ -165,10 +163,7 @@ def build_query_expansion_chain():
                   "확장 질의 갯수: {n}\n"
                   "질의 '{query}'에 대해 {n}개의 확장된 키워드형 질의를 만들어라.")]
     )
-    query_expansion_chain = prompt_template | ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-001",
-        temperature=0
-    ).with_structured_output(ExpandedQuery)
+    query_expansion_chain = prompt_template | chat.with_structured_output(ExpandedQuery)
     
     return query_expansion_chain
 
@@ -193,10 +188,7 @@ def build_news_analysis_chain():
                   "4. 전반적인 경제 상황")]
     )
     
-    news_analysis_chain = prompt_template | ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-001",
-        temperature=0
-    ).with_structured_output(NewsAnalysis)
+    news_analysis_chain = prompt_template | chat.with_structured_output(NewsAnalysis)
     
     return news_analysis_chain
 
