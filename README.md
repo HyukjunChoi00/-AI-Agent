@@ -1,4 +1,12 @@
 # 뉴스 데이터 기반 투자 의사결정 지원 시스템 : HYPERCLOVA을 활용한 AI Agent 시스템
+
+해당 프로젝트는, 사용자의 투자 결정 의사지원을 돕기 위한 AI Agent 시스템입니다.  
+사용자의 질의에 맞는 뉴스 기사를 검색하여, 종합적인 분석 내용을 응답해줍니다.  
+특히, 경제 전문 뉴스를 다루는 Econotimes의 뉴스를 추출하는 방식을 선택했습니다.  
+Workflow는 아래와 같습니다.  
+<img width="1827" height="752" alt="image" src="https://github.com/user-attachments/assets/a35942ff-f549-4555-acbe-b9768d544a5e" />
+
+
 - 사용자의 질의에 따른 뉴스 기사 검색  ex) NVIDA 주식 동향이 어때?
 - 쿼리 확장을 통해 사용자 질의와 관련된 파생 키워드 생성 ex) NVIDA --> AI, GPU
 - 확장된 쿼리 키워드를 기반으로 뉴스 검색 수행
