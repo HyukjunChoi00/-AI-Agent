@@ -53,27 +53,128 @@ chat = ChatClovaX(
 )
 
 ###########################################
-# RAG 데이터 불러오기
-pdf_docs = []
-pdf_loader = PyPDFLoader("경제금융용어 700선.pdf")
-pdf_docs = pdf_loader.load()
-qa_dataset = load_dataset("coorung/Kor-financial-qa-7K", split="train")
-qa_docs = []
-for example in qa_dataset:
-    if "query" in example and "pos" in example and example["pos"]:
-    text = f"질문: {example['query']}\n답변: {example['pos'][0]}"
-    qa_docs.append(Document(page_content=text))
-all_docs = pdf_docs + qa_docs
-splitter = RecursiveCharacterTextSplitter(chunk_size=642, chunk_overlap=50)
-split_docs = splitter.split_documents(all_docs)
-retriever = BM25Retriever.from_documents(split_docs)
-self.qa_chain = RetrievalQA.from_chain_type(
-    llm=chat,
-    chain_type="stuff",
-    retriever=retriever,
-    return_source_documents=True,
-)
-###########################################
+# RAG 데이터 불러오기 및 전문용어 주석 시스템
+class TermAnnotator:
+    def __init__(self):
+        self.qa_chain = None
+        self.is_initialized = False
+        
+    def initialize(self):
+        try:
+            # PDF 로더
+            pdf_docs = []
+            pdf_loader = PyPDFLoader("경제금융용어 700선.pdf")
+            pdf_docs = pdf_loader.load()
+            
+            # QA 데이터셋 로더
+            qa_dataset = load_dataset("coorung/Kor-financial-qa-7K", split="train")
+            qa_docs = []
+            for example in qa_dataset:
+                if "query" in example and "pos" in example and example["pos"]:
+                    text = f"질문: {example['query']}\n답변: {example['pos'][0]}"
+                    qa_docs.append(Document(page_content=text))
+            
+            # 모든 문서 합치기
+            all_docs = pdf_docs + qa_docs
+            splitter = RecursiveCharacterTextSplitter(chunk_size=642, chunk_overlap=50)
+            split_docs = splitter.split_documents(all_docs)
+            
+            # BM25 리트리버 생성
+            retriever = BM25Retriever.from_documents(split_docs)
+            
+            # QA 체인 생성
+            self.qa_chain = RetrievalQA.from_chain_type(
+                llm=chat,
+                chain_type="stuff",
+                retriever=retriever,
+                return_source_documents=True,
+            )
+            
+            self.is_initialized = True
+            return True
+        except Exception as e:
+            st.error(f"전문용어 주석 시스템 초기화 실패: {e}")
+            return False
+    
+    def explain_terms(self, text: str) -> str:
+        """텍스트에서 금융 전문용어를 찾아 주석을 추가"""
+        if not self.is_initialized or not self.qa_chain:
+            return text
+        
+        try:
+            # 금융 전문용어 패턴 (한국어)
+            financial_terms = [
+                r'P/E\s*비율', r'PER', r'PBR', r'ROE', r'ROA', r'배당수익률', r'시가총액',
+                r'주가수익비율', r'주가순자산비율', r'자기자본이익률', r'총자산이익률',
+                r'ETF', r'펀드', r'옵션', r'선물', r'스왑', r'파생상품', r'헤지펀드',
+                r'벤처캐피탈', r'엔젤투자', r'IPO', r'M&A', r'스핀오프', r'스핀아웃',
+                r'배당', r'주식분할', r'유상증자', r'무상증자', r'자사주매입', r'자사주소각',
+                r'시장가', r'공시가', r'장부가', r'평가손익', r'실현손익', r'미실현손익',
+                r'베타', r'알파', r'샤프비율', r'정보비율', r'최대낙폭', r'변동성',
+                r'리스크', r'수익률', r'수익성', r'성장성', r'안정성', r'유동성',
+                r'시장성', r'거래량', r'거래대금', r'시장지배력', r'경쟁우위',
+                r'모멘텀', r'밸류', r'그로스', r'디팬더블', r'사이클리컬', r'디펜시브'
+            ]
+            
+            # 영어 전문용어 패턴
+            english_terms = [
+                r'\bP/E\b', r'\bPER\b', r'\bPBR\b', r'\bROE\b', r'\bROA\b', r'\bETF\b',
+                r'\bIPO\b', r'\bM&A\b', r'\bVC\b', r'\bPE\b', r'\bHedge\s*Fund\b',
+                r'\bDerivative\b', r'\bOption\b', r'\bFuture\b', r'\bSwap\b',
+                r'\bBeta\b', r'\bAlpha\b', r'\bSharpe\s*Ratio\b', r'\bInformation\s*Ratio\b',
+                r'\bMaximum\s*Drawdown\b', r'\bVolatility\b', r'\bRisk\b', r'\bReturn\b',
+                r'\bYield\b', r'\bDividend\b', r'\bMarket\s*Cap\b', r'\bLiquidity\b',
+                r'\bMomentum\b', r'\bValue\b', r'\bGrowth\b', r'\bDefensive\b',
+                r'\bCyclical\b', r'\bDependable\b'
+            ]
+            
+            annotated_text = text
+            explained_terms = set()
+            
+            # 한국어 전문용어 찾기
+            for term_pattern in financial_terms:
+                matches = re.finditer(term_pattern, text, re.IGNORECASE)
+                for match in matches:
+                    term = match.group()
+                    if term not in explained_terms:
+                        # RAG로 용어 설명 가져오기
+                        try:
+                            result = self.qa_chain.invoke({"query": f"{term}이란 무엇인가요?"})
+                            explanation = result.get('result', f"{term}에 대한 설명을 찾을 수 없습니다.")
+                            
+                            # 주석 형태로 추가
+                            annotation = f"\n\n> **{term}**: {explanation}\n"
+                            annotated_text = annotated_text.replace(term, f"{term}{annotation}", 1)
+                            explained_terms.add(term)
+                        except:
+                            continue
+            
+            # 영어 전문용어 찾기
+            for term_pattern in english_terms:
+                matches = re.finditer(term_pattern, text, re.IGNORECASE)
+                for match in matches:
+                    term = match.group()
+                    if term not in explained_terms:
+                        # RAG로 용어 설명 가져오기
+                        try:
+                            result = self.qa_chain.invoke({"query": f"What is {term}?"})
+                            explanation = result.get('result', f"No explanation found for {term}.")
+                            
+                            # 주석 형태로 추가
+                            annotation = f"\n\n> **{term}**: {explanation}\n"
+                            annotated_text = annotated_text.replace(term, f"{term}{annotation}", 1)
+                            explained_terms.add(term)
+                        except:
+                            continue
+            
+            return annotated_text
+            
+        except Exception as e:
+            st.warning(f"전문용어 주석 처리 중 오류: {e}")
+            return text
+
+# 전역 전문용어 주석 시스템 인스턴스 생성
+term_annotator = TermAnnotator()
 
 # 전문용어 질의 그래프
 
@@ -508,9 +609,13 @@ if 'graph' not in st.session_state:
     st.session_state.graph = graph
     st.session_state.llm = llm
 
-# 전문용어 주석 시스템 초기화
+# 전문용어 주석 시스템 자동 초기화
 if 'term_annotator_initialized' not in st.session_state:
-    st.session_state.term_annotator_initialized = False
+    with st.spinner("전문용어 주석 시스템 초기화 중..."):
+        if term_annotator.initialize():
+            st.session_state.term_annotator_initialized = True
+        else:
+            st.session_state.term_annotator_initialized = False
 
 graph = st.session_state.graph 
 llm = st.session_state.llm 
@@ -520,24 +625,11 @@ llm = st.session_state.llm
 
 st.title("📰 금융 투자 지원 챗봇")
 
-# 전문용어 주석 시스템 초기화 섹션
-st.markdown("### 🔧 전문용어 주석 시스템")
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    if not st.session_state.term_annotator_initialized:
-        st.warning("⚠️ 전문용어 주석 시스템이 초기화되지 않았습니다.")
-        st.info("📌 전문용어 주석 기능을 사용하려면 초기화 버튼을 클릭하세요.")
-    else:
-        st.success("✅ 전문용어 주석 시스템이 초기화되었습니다.")
-
-with col2:
-    if st.button("🔧 전문용어 주석 시스템 초기화", type="primary"):
-        with st.spinner("전문용어 주석 시스템 초기화 중..."):
-            term_annotator.initialize()
-            if term_annotator.is_initialized:
-                st.session_state.term_annotator_initialized = True
-                st.rerun()
+# 전문용어 주석 시스템 상태 표시
+if st.session_state.term_annotator_initialized:
+    st.success("✅ 전문용어 주석 시스템이 준비되었습니다.")
+else:
+    st.warning("⚠️ 전문용어 주석 시스템 초기화 중...")
 
 st.markdown("---")
 
@@ -671,6 +763,12 @@ if query := st.chat_input("검색할 키워드를 입력하세요"):
                         elif k == 'generate':
                             st.markdown("## 📋 최종 분석 리포트")
                             st.markdown(v['answer'])
+                            
+                            # 전문용어 주석이 달린 답변 표시
+                            if v.get('annotated_answer') and v['annotated_answer'] != v['answer']:
+                                st.markdown("---")
+                                st.markdown("## 📝 전문용어 주석이 포함된 리포트")
+                                st.markdown(v['annotated_answer'])
 
             except Exception as e:
                 st.error(f"처리 중 오류 발생: {e}")
