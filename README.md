@@ -2,7 +2,7 @@
 
 #### 사용법
 ```
-streamlit run dasan509.py
+streamlit run dasan.py
 ```
 
 #### 패키지 설치
