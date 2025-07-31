@@ -46,7 +46,7 @@ except ImportError:
     st.code("playwright install chromium")
 
 # 환경 변수 설정
-os.environ["CLOVASTUDIO_API_KEY"] = 'nv-1f1def6bd290499888f325e448e00d6f4O21'
+os.environ["CLOVASTUDIO_API_KEY"] = ''
 
 from langchain_naver import ChatClovaX
   
