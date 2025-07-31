@@ -28,7 +28,7 @@ playwright install chromium
 ```
 
 #### CLOVASTUDIO_API_KEY
-코드 53번 줄에 API KEY를 입력
+코드 49번 줄에 API KEY를 입력
 ```
 os.environ["CLOVASTUDIO_API_KEY"] = ''
 ```
