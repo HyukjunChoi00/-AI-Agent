@@ -55,7 +55,7 @@ Workflow는 아래와 같습니다.
 - streamlit run ctest.py
 - 위 코드 실행 시, 금융 뉴스 검색 기반으로 사용자가 관심있는 주식 종목 관련 동향 및 일반적인 경제 상황 분석 가능
 
-<img width="2458" height="1266" alt="image" src="https://github.com/user-attachments/assets/49fb31f8-cd58-4ef6-bce0-4c7ba9596027" />
+-------------------------
 
 <img width="781" height="750" alt="image" src="https://github.com/user-attachments/assets/e95874d4-f80f-40fc-814e-56e6ddd22a89" />
 
