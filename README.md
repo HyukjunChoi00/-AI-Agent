@@ -1,6 +1,6 @@
 # 뉴스 데이터 기반 투자 의사결정 지원 시스템 : HYPERCLOVA을 활용한 AI Agent 시스템
 
-### 사용법
+#### 사용법
 ```
 streamlit run ctest.py
 ```
@@ -23,11 +23,16 @@ pip install \
     lxml
 ```
 
-### Playwright 설치
+#### Playwright 설치
 ```
 playwright install chromium
 ```
 
+#### CLOVASTUDIO_API_KEY
+코드 47번 줄에 API KEY를 입력
+```
+os.environ["CLOVASTUDIO_API_KEY"] = ''
+```
 
 해당 프로젝트는, 사용자의 투자 결정 의사지원을 돕기 위한 AI Agent 시스템입니다.  
 사용자의 질의에 맞는 뉴스 기사를 검색하여, 종합적인 분석 내용을 응답해줍니다.  
