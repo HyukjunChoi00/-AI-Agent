@@ -2,7 +2,7 @@
 
 #### 사용법
 ```
-streamlit run ctest.py
+streamlit run dasan509.py
 ```
 
 #### 패키지 설치
@@ -29,7 +29,7 @@ playwright install chromium
 ```
 
 #### CLOVASTUDIO_API_KEY
-코드 47번 줄에 API KEY를 입력
+코드 53번 줄에 API KEY를 입력
 ```
 os.environ["CLOVASTUDIO_API_KEY"] = ''
 ```
