@@ -14,7 +14,6 @@ pip install \
     langchain \
     langchain-core \
     langchain-community \
-    langchain-google-genai \
     langchain-navar \
     pydantic \
     datasets \
