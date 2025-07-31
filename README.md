@@ -46,6 +46,7 @@ Workflow는 아래와 같습니다.
 
 <img width="1827" height="752" alt="image" src="https://github.com/user-attachments/assets/a35942ff-f549-4555-acbe-b9768d544a5e" />
 
+----------------------------------------
 
 - 사용자의 질의에 따른 뉴스 기사 검색  ex) NVIDA 주식 동향이 어때?
 - 쿼리 확장을 통해 사용자 질의와 관련된 파생 키워드 생성 ex) NVIDA --> AI, GPU
