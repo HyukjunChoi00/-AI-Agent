@@ -38,6 +38,10 @@ os.environ["CLOVASTUDIO_API_KEY"] = ''
 사용자의 질의에 맞는 뉴스 기사를 검색하여, 종합적인 분석 내용을 응답해줍니다.  
 특히, 경제 전문 뉴스를 다루는 Econotimes의 뉴스를 추출하는 방식을 선택했습니다.  
 Workflow는 아래와 같습니다.  
+  
+
+
+
 <img width="1827" height="752" alt="image" src="https://github.com/user-attachments/assets/a35942ff-f549-4555-acbe-b9768d544a5e" />
 
 
