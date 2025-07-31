@@ -1,7 +1,8 @@
 # 뉴스 데이터 기반 투자 의사결정 지원 시스템 : HYPERCLOVA을 활용한 AI Agent 시스템
 
 #### 로컬 환경 사용법
-dasan.py 와 경제금융용어 700선 다운로드
+dasan.py 와 경제금융용어 700선 다운로드  
+
 powershell prompt에서 아래 코드 실행  
 ```
 streamlit run dasan.py
